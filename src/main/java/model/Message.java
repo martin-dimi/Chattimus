@@ -5,37 +5,37 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private int chatRoomId;
-    private String from;
-    private String to;
-    private String messageText;
+    private String sender;
+    private String receiver;
+    private String body;
 
-    public Message(String from, String to, String messageText){
-        this.from = from;
-        this.to = to;
-        this.messageText = messageText;
+    public Message(String sender, String receiver, String body){
+        this.sender = sender;
+        this.receiver = receiver;
+        this.body = body;
     }
 
-    public String getFrom() {
-        return from;
+    public String getSender() {
+        return sender;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
-    public String getTo() {
-        return to;
+    public String getReceiver() {
+        return receiver;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
-    public String getMessageText() {
-        return messageText;
+    public String getBody() {
+        return body;
     }
 
-    public void setMessageText(String messageText) {
-        this.messageText = messageText;
+    public void setBody(String body) {
+        this.body = body;
     }
 }

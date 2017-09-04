@@ -1,17 +1,19 @@
-package client.gui;
+package client.gui.login;
+
+import client.utils.ConnectionCreator;
+import client.utils.ConnectionService;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class StartMenu extends JFrame {
+public class LoginFrame extends JFrame {
 
     private JPanel panel;
-
-    private MenuWindow menuWindow;
-    private LoginWindow loginWindow;
-    private CreateUserWindow createUserWindow;
+    private CreateUserPanel createUserPanel;
+    private ConnectionService connectionService;
 
     public void start(){
+        connectionService = new ConnectionCreator();
         constructJFrame();
         constructWindows();
         showMenu();
@@ -29,7 +31,7 @@ public class StartMenu extends JFrame {
 
     }
     private void constructWindows(){
-        menuWindow = new MenuWindow(this) {
+        StartUpPanel menuPanel = new StartUpPanel() {
             @Override
             void loginOnClick() {
                 showLogin();
@@ -41,7 +43,7 @@ public class StartMenu extends JFrame {
             }
         };
 
-        loginWindow = new LoginWindow(this) {
+        ExistingUserPanel loginPanel = new ExistingUserPanel(this) {
             @Override
             void loginOnClick() {
 
@@ -52,10 +54,10 @@ public class StartMenu extends JFrame {
             }
         };
 
-        createUserWindow = new CreateUserWindow(this) {
+        createUserPanel = new CreateUserPanel(this) {
             @Override
             void createUserOnClick() {
-
+                createUser();
             }
 
             void backOnClick() {
@@ -63,9 +65,14 @@ public class StartMenu extends JFrame {
             }
         };
 
-        panel.add(menuWindow, "Menu");
-        panel.add(loginWindow, "Login");
-        panel.add(createUserWindow, "Create_user");
+        panel.add(menuPanel, "Menu");
+        panel.add(loginPanel, "Login");
+        panel.add(createUserPanel, "Create_user");
+    }
+
+    private void createUser(){
+        String userName = createUserPanel.getUsername();
+        connectionService.createUser(userName);
     }
 
     private void showMenu(){

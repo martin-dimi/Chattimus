@@ -3,46 +3,40 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server{
 
-    private final Logger logger = Logger.getLogger(Server.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
+    private static final int serverPort = 6667;
 
-    private int serverPort = 6667;
     private ServerSocket serverSocket = null;
     private boolean isStopped = false;
 
-    public static Map<String, ClientHandler> users = new HashMap<String, ClientHandler>();
-
     public void start(){
         openServerSocket();
-        while(! isStopped()){
-            Socket clientSocket = null;
+        while(!isStopped()){
             try {
-                clientSocket = serverSocket.accept();
+                LOGGER.log(Level.INFO, "Waiting for Client to connect");
+                Socket clientSocket = serverSocket.accept();
                 connectClient(clientSocket);
-                logger.log(Level.INFO, "UserCredentials connected");
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error accepting client connection");
+                LOGGER.log(Level.SEVERE, "Error accepting client connection");
             }
         }
         System.out.println("Server Stopped.") ;
     }
 
     private void connectClient(Socket clientSocket){
-        ClientHandler client = new ClientHandler(clientSocket);
-        new Thread(client).start();
-        users.put(client.getUserName(), client);
+        ClientConnectionHandler client = new ClientConnectionHandler(clientSocket);
+        new Thread(client).run();
     }
 
     private void openServerSocket() {
         try {
-            this.serverSocket = new ServerSocket(this.serverPort);
-            logger.log(Level.INFO, "Server is running");
+            serverSocket = new ServerSocket(serverPort);
+            LOGGER.log(Level.INFO, "Server is running");
         } catch (IOException e) {
             throw new RuntimeException("Cannot open port 8080", e);
         }

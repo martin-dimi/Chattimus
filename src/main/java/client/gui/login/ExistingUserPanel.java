@@ -1,30 +1,25 @@
-package client.gui;
+package client.gui.login;
+
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class CreateUserWindow extends JPanel{
-
-    private JFrame frame;
+public abstract class ExistingUserPanel extends JPanel{
 
     private JTextField username;
     private JTextField password;
 
-    public CreateUserWindow(JFrame frame){
-        setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    public ExistingUserPanel(JFrame frame){
+        this.setLayout(new GridBagLayout());
+        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel usernameLabel = new JLabel();
-        JLabel passwordLabel = new JLabel();
-        username = new JTextField();
-        password = new JTextField();
-        JButton createButton = new JButton();
-
         //Username label
-        usernameLabel.setText("Create username:   ");
+        JLabel usernameLabel = new JLabel();
+        usernameLabel.setText("Username:   ");
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
@@ -32,6 +27,7 @@ public abstract class CreateUserWindow extends JPanel{
         //
 
         //Username field
+        username = new JTextField();
         username.setColumns(10);
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -40,7 +36,8 @@ public abstract class CreateUserWindow extends JPanel{
         //
 
         //Password label
-        passwordLabel.setText("Create password:   ");
+        JLabel passwordLabel = new JLabel();
+        passwordLabel.setText("Password:   ");
         gbc.insets = new Insets(5, 0 , 0, 0);
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -49,6 +46,7 @@ public abstract class CreateUserWindow extends JPanel{
         //
 
         //Password field
+        password = new JTextField();
         password.setColumns(10);
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -57,17 +55,18 @@ public abstract class CreateUserWindow extends JPanel{
         //
 
         //Login button
-        createButton.setText("Create User");
-        createButton.addActionListener(new ActionListener() {
+        JButton loginButton = new JButton();
+        loginButton.setText("Login");
+        loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                createUserOnClick();
+                loginOnClick();
             }
         });
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(30, 20 , 0, 0);
-        add(createButton, gbc);
+        add(loginButton, gbc);
         //
 
         //Back button
@@ -83,6 +82,7 @@ public abstract class CreateUserWindow extends JPanel{
         gbc.gridwidth = 1;
         add(backButton, gbc);
         //
+
     }
 
 
@@ -94,8 +94,6 @@ public abstract class CreateUserWindow extends JPanel{
         return password.getText();
     }
 
-    abstract void createUserOnClick();
+    abstract void loginOnClick();
     abstract void backOnClick();
-
-
 }

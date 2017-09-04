@@ -1,15 +1,13 @@
-package client.gui;
+package client.gui.login;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class MenuWindow extends JPanel {
+public abstract class StartUpPanel extends JPanel {
 
-    private JFrame frame;
-
-    public MenuWindow(JFrame frame){
+    public StartUpPanel(){
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;

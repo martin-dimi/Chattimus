@@ -45,16 +45,15 @@ public class ClientHandler extends Thread{
         while(true){
             try {
                 Message message = (Message) input.readObject();
-                String messageText = message.getMessageText();
-                String messageReceiver = message.getTo();
+                String messageText = message.getBody();
+                String messageReceiver = message.getReceiver();
                 if (messageText != null && !messageText.equals("")) {
-                    //Server.users.get(message.getTo()).sentMessage(message);
                     System.out.println(messageText);
                     if(messageReceiver != null)
                         System.out.println(messageReceiver);
                 }
             } catch (IOException e) {
-                logger.log(Level.INFO,"UserCredentials disconnected");
+                logger.log(Level.INFO,"User disconnected");
                 disconnect();
                 break;
             } catch (ClassNotFoundException e) {
