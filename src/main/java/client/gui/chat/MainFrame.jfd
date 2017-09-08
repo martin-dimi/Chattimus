@@ -1,0 +1,82 @@
+JFDML JFormDesigner: "6.0.2.0.116" Java: "1.8.0_152-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {comp accountInformationPanel:::p:151:p, space :::p, par l {seq {comp panel1:::::x, space :::p}, comp ChatPanel:::::x}}}"
+			"$verticalGroup": "par l {comp accountInformationPanel:::::x, seq {comp panel1:::p::p, space :::p, comp ChatPanel:::::x}}"
+		} ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			"minimumSize": new java.awt.Dimension( 600, 300 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp personalInfoPanel:::::x, comp friendsListPanel:::::x}, space :::p}}"
+				"$verticalGroup": "par l {seq l {space :::p, comp personalInfoPanel:::p::p, space u:::p, comp friendsListPanel::::279:x, space :::p}}"
+			} ) {
+				name: "accountInformationPanel"
+				"background": new java.awt.Color( 0, 51, 102, 255 )
+				"componentOrientation": sfield java.awt.ComponentOrientation LEFT_TO_RIGHT
+				"minimumSize": new java.awt.Dimension( 100, 200 )
+				"preferredSize": new java.awt.Dimension( 150, 389 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :::p, comp accountNameLabel::::127:x, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp accountNameLabel:::p::p, space ::64:x}}"
+				} ) {
+					name: "personalInfoPanel"
+					"background": new java.awt.Color( 0, 51, 102, 255 )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "accountNameLabel"
+						"text": "Name"
+						"horizontalAlignment": 0
+						"background": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "friendsListPanel"
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "list1"
+					} )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq l {space :::p, par l {comp historyScrollPane::::360:x, seq {comp messageField::::260:x, space :::p, comp sentMessageButton:::p:94:p}}, space :::p}}"
+				"$verticalGroup": "par l {seq t {space :::p, comp historyScrollPane::::225:x, space :p:12:p, par b {comp messageField::b:p:32:p, comp sentMessageButton::b:::p}, space :p:20:p}}"
+			} ) {
+				name: "ChatPanel"
+				"background": new java.awt.Color( 153, 153, 153, 255 )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "messageField"
+					"background": new java.awt.Color( 204, 204, 204, 255 )
+					"foreground": new java.awt.Color( 0, 0, 0, 255 )
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "historyScrollPane"
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "historyMessagesArea"
+						"background": new java.awt.Color( 204, 204, 204, 255 )
+						"editable": false
+						"foreground": new java.awt.Color( 0, 0, 0, 255 )
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "sentMessageButton"
+					"text": "Send"
+					"background": new java.awt.Color( 153, 153, 153, 255 )
+					"foreground": new java.awt.Color( 0, 0, 0, 255 )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sentMessageButtonActionPerformed", true ) )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {space :0:366:x}"
+				"$verticalGroup": "par l {space :0:88:x}"
+			} ) {
+				name: "panel1"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 545, 425 )
+		} )
+	}
+}

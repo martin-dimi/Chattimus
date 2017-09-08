@@ -5,9 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class StartUpPanel extends JPanel {
+public abstract class UserSelectPanel extends JPanel {
 
-    public StartUpPanel(){
+    public UserSelectPanel(){
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;

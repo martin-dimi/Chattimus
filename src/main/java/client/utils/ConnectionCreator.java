@@ -13,21 +13,46 @@ public class ConnectionCreator implements ConnectionService {
 
     private final static String IP = "localhost";
     private final static int PORT = 6667;
+    private final static int REQUEST_ID_SENT_MESSAGE = 0;
+    private final static int REQUEST_ID_CONNECT_USER = 1;
+    private final static int REQUEST_ID_CREATE_USER = 2;
 
     private ObjectOutputStream output;
     private ObjectInputStream input;
 
-    public boolean connectUser(String username) {
-       return false;
+    public ConnectionCreator(){
+        connect();
     }
 
-    public boolean createUser(String username) {
-        connect();
+    @Override
+    public boolean connectUser(String username, String password) {
         LOGGER.log(Level.INFO, "Sending request");
-        int requestNumber = 1;
         try {
-            output.writeInt(requestNumber);
+            output.writeInt(REQUEST_ID_CONNECT_USER);
             output.writeObject(username);
+            output.writeObject(password);
+            output.flush();
+            Boolean userConnected = input.readBoolean();
+            if(userConnected){
+                LOGGER.log(Level.INFO, "User connected successfully");
+                return true;
+            } else {
+                LOGGER.log(Level.WARNING, "Wrong username or password");
+                return false;
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Couldn't connect user");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createUser(String username, String password) {
+        LOGGER.log(Level.INFO, "Sending request");
+        try {
+            output.writeInt(REQUEST_ID_CREATE_USER);
+            output.writeObject(username);
+            output.writeObject(password);
             output.flush();
             Boolean userCreated = input.readBoolean();
             if(userCreated){
@@ -43,6 +68,12 @@ public class ConnectionCreator implements ConnectionService {
         }
     }
 
+    @Override
+    public boolean sentMessage(String message) {
+
+        return false;
+    }
+
     private void connect(){
         try {
             Socket serverSocket = new Socket(IP, PORT);
@@ -52,6 +83,19 @@ public class ConnectionCreator implements ConnectionService {
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, "Could not connect to server: " + IP);
+        }
+    }
+
+    private void disconnect(){
+        LOGGER.log(Level.INFO, "Sending request");
+        try {
+            output.writeInt(REQUEST_ID_CREATE_USER);
+            output.flush();
+
+            output.close();
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

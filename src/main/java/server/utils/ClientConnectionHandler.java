@@ -1,5 +1,7 @@
-package server;
+package server.utils;
 
+import dao.UserDao;
+import dao.UserDaoService;
 import model.Message;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ public class ClientConnectionHandler extends
 
     private static final Logger LOGGER =
             Logger.getLogger(ClientConnectionHandler.class.getSimpleName());
+    private final UserDaoService userDao = new UserDao();
 
     private final Socket mSocket;
     private ObjectInputStream input = null;
@@ -34,6 +37,13 @@ public class ClientConnectionHandler extends
     }
 
     @Override
+    public void run() {
+        while(isConnected){
+            acceptRequest();
+        }
+    }
+
+    @Override
     public void acceptRequest() {
         try {
             LOGGER.log(Level.INFO, "Waiting for request");
@@ -43,15 +53,21 @@ public class ClientConnectionHandler extends
                     acceptMessage();
                     break;
                 case 1:
-                    createUser();
-                    break;
-                case 2:
                     connectUser();
                     break;
+                case 2:
+                    createUser();
+                    break;
+                case 3:
+                    disconnectUser();
+                    break;
+                default:
+                    LOGGER.log(Level.SEVERE, "Couldn't recognise request");
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error: could't accept client request");
-            e.printStackTrace();
+            isConnected = false;
+            LOGGER.log(Level.INFO, "User disconnected");
+            disconnectUser();
         }
     }
 
@@ -69,12 +85,17 @@ public class ClientConnectionHandler extends
     @Override
     public void createUser() {
         try {
+            LOGGER.log(Level.INFO, "Reading user credentials");
             String username = (String)input.readObject();
-            System.out.println("USER " + username + " CREATED!!!");
-            output.writeBoolean(true);
+            String password = (String)input.readObject();
+
+            Boolean userCreated = userDao.createUser(username, password);
+            output.writeBoolean(userCreated);
             output.flush();
+            LOGGER.log(Level.INFO, "User created");
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error: creating user");
+            disconnectUser();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -82,18 +103,33 @@ public class ClientConnectionHandler extends
 
     @Override
     public void connectUser() {
-        System.out.println("USER CONNECTED!!!");
+        try {
+            LOGGER.log(Level.INFO, "Reading user credentials");
+            String username = (String)input.readObject();
+            String password = (String)input.readObject();
+
+            Boolean userExist = userDao.getUser(username, password);
+            output.writeBoolean(userExist);
+            output.flush();
+            LOGGER.log(Level.INFO, "User logged");
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error: creating user");
+            disconnectUser();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void disconnectUser() {
-
-    }
-
-    @Override
-    public void run() {
-        while(isConnected){
-            acceptRequest();
+        try {
+            input.close();
+            output.close();
+            mSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+
 }

@@ -1,4 +1,4 @@
-package server;
+package server.utils;
 
 public abstract class ClientConnectionHandlerService implements Runnable{
 

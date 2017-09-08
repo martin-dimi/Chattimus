@@ -1,5 +1,7 @@
 package server;
 
+import server.utils.ClientConnectionHandler;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,10 +20,11 @@ public class Server{
         openServerSocket();
         while(!isStopped()){
             try {
+                Thread.sleep(100);
                 LOGGER.log(Level.INFO, "Waiting for Client to connect");
                 Socket clientSocket = serverSocket.accept();
                 connectClient(clientSocket);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Error accepting client connection");
             }
         }
@@ -30,7 +33,7 @@ public class Server{
 
     private void connectClient(Socket clientSocket){
         ClientConnectionHandler client = new ClientConnectionHandler(clientSocket);
-        new Thread(client).run();
+        new Thread(client).start();
     }
 
     private void openServerSocket() {
