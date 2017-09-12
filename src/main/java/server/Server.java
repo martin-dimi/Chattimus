@@ -1,7 +1,5 @@
 package server;
 
-import server.utils.ClientConnectionHandler;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -32,7 +30,7 @@ public class Server{
     }
 
     private void connectClient(Socket clientSocket){
-        ClientConnectionHandler client = new ClientConnectionHandler(clientSocket);
+        ClientWorker client = new ClientWorker(clientSocket);
         new Thread(client).start();
     }
 

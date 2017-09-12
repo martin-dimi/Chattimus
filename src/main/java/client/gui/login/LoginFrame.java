@@ -1,19 +1,23 @@
 package client.gui.login;
 
 import client.gui.chat.MainFrame;
-import client.utils.ConnectionCreator;
 import client.utils.ConnectionService;
-import sun.applet.Main;
+import model.User;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class LoginFrame extends JFrame {
 
-    private JPanel panel;
+    private static final int FRAME_SIZE_X = 300;
+    private static final int FRAME_SIZE_Y = 350;
+
+    private JPanel loginPanel;
     private UserExistPanel userExistPanel;
     private UserCreatePanel userCreatePanel;
-    private ConnectionService connectionService;
+    private ErrorPanel errorPanel;
+
+    private final ConnectionService connectionService;
 
     private MainFrame mainFrame;
 
@@ -24,19 +28,27 @@ public class LoginFrame extends JFrame {
     public void start(){
         constructJFrame();
         constructWindows();
-        showMenu();
-        setVisible(true);
+        showLoading();
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                if(connectionService.connectService())
+                    showMenu();
+                else
+                    showError();
+            }
+        }.start();
     }
 
     private void constructJFrame(){
-        setSize(300, 350);
-        panel = new JPanel(new CardLayout());
+        setSize(FRAME_SIZE_X, FRAME_SIZE_Y);
+        loginPanel = new JPanel(new CardLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        add(panel);
+        add(loginPanel);
         setResizable(false);
         setVisible(true);
-
     }
     private void constructWindows(){
         UserSelectPanel menuPanel = new UserSelectPanel() {
@@ -50,68 +62,97 @@ public class LoginFrame extends JFrame {
                 showCreateUser();
             }
         };
-
         userExistPanel = new UserExistPanel(this) {
             @Override
             void loginOnClick() {
-                boolean connected = loginUser();
-                if(connected)
-                    startApplication();
+                User user = loginUser();
+                if(user != null)
+                    startApplication(user);
             }
 
             void backOnClick() {
                 showMenu();
             }
         };
-
         userCreatePanel = new UserCreatePanel(this) {
             @Override
             void createUserOnClick() {
-                boolean connected = createUser();
-                if(connected)
-                    startApplication();
+                User user = createUser();
+                if(user != null)
+                    startApplication(user);
             }
 
             void backOnClick() {
                 showMenu();
             }
         };
+        errorPanel = new ErrorPanel();
 
-        panel.add(menuPanel, "Menu");
-        panel.add(userExistPanel, "Login");
-        panel.add(userCreatePanel, "Create_user");
+        loginPanel.add(menuPanel, "Menu");
+        loginPanel.add(userExistPanel, "Login");
+        loginPanel.add(userCreatePanel, "Create_user");
+        loginPanel.add(errorPanel, "Error");
     }
 
-    private Boolean loginUser(){
+    private User loginUser(){
         String userName = userExistPanel.getUsername();
         String password = userExistPanel.getPassword();
         return connectionService.connectUser(userName, password);
     }
 
-    private Boolean createUser(){
+    private User createUser(){
         String userName = userCreatePanel.getUsername();
         String password = userCreatePanel.getPassword();
         return connectionService.createUser(userName, password);
     }
 
     private void showMenu(){
-        CardLayout layout = (CardLayout) panel.getLayout();
-        layout.show(panel, "Menu");
+        CardLayout layout = (CardLayout) loginPanel.getLayout();
+        layout.show(loginPanel, "Menu");
     }
 
     private void showLogin(){
-        CardLayout layout = (CardLayout) panel.getLayout();
-        layout.show(panel, "Login");
+        CardLayout layout = (CardLayout) loginPanel.getLayout();
+        layout.show(loginPanel, "Login");
     }
 
     private void showCreateUser(){
-        CardLayout layout = (CardLayout) panel.getLayout();
-        layout.show(panel, "Create_user");
+        CardLayout layout = (CardLayout) loginPanel.getLayout();
+        layout.show(loginPanel, "Create_user");
     }
 
-    private void startApplication(){
+    private void showError(){
+        errorPanel.showError();
+        CardLayout layout = (CardLayout) loginPanel.getLayout();
+        layout.show(loginPanel, "Error");
+    }
+
+    private void showLoading(){
+        errorPanel.showLoading();
+        CardLayout layout = (CardLayout) loginPanel.getLayout();
+        layout.show(loginPanel, "Error");
+    }
+
+    private void startApplication(User user){
         dispose();
-        mainFrame.start();
+        mainFrame.start(connectionService, user);
+    }
+
+    class ErrorPanel extends JPanel{
+        private JLabel connectionStatus;
+
+        ErrorPanel(){
+            connectionStatus = new JLabel("");
+            add(connectionStatus);
+        }
+
+        public void showLoading(){
+            connectionStatus.setText("Connecting to server..");
+        }
+
+        public void showError(){
+            connectionStatus.setText("Could not connect to server.");
+        }
     }
 }
 

@@ -5,19 +5,23 @@
 package client.gui.chat;
 
 import client.utils.ConnectionService;
+import model.Message;
+import model.User;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
-import javax.swing.plaf.*;
 
 
 public class MainFrame extends JFrame {
 
+    private ConnectionService connectionService;
+    private User user;
 
-
-    public void start(){
+    public void start(ConnectionService service, User user){
+        connectionService = service;
+        this.user = user;
         setVisible(true);
         initComponents();
     }
@@ -26,16 +30,29 @@ public class MainFrame extends JFrame {
         String message = messageField.getText();
         messageField.setText("");
         historyMessagesArea.append(message + "\n");
+
+        connectionService.sentMessage(message);
+    }
+
+
+    private void createUIComponents() {
+        accountNameLabel = new JLabel(user.getUsername());
+    }
+
+    private void addFriendButtonActionPerformed(ActionEvent e) {
+        AddFriendFrame addFriendFrame = new AddFriendFrame(connectionService);
     }
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - martin dimitrov
+        createUIComponents();
+
         accountInformationPanel = new JPanel();
         personalInfoPanel = new JPanel();
-        accountNameLabel = new JLabel();
         friendsListPanel = new JScrollPane();
         list1 = new JList();
+        addFriendButton = new JButton();
         ChatPanel = new JPanel();
         messageField = new JTextField();
         historyScrollPane = new JScrollPane();
@@ -68,7 +85,6 @@ public class MainFrame extends JFrame {
                 personalInfoPanel.setBackground(new Color(0, 51, 102));
 
                 //---- accountNameLabel ----
-                accountNameLabel.setText("Name");
                 accountNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 accountNameLabel.setBackground(Color.white);
                 accountNameLabel.setForeground(Color.white);
@@ -79,7 +95,7 @@ public class MainFrame extends JFrame {
                     personalInfoPanelLayout.createParallelGroup()
                         .addGroup(personalInfoPanelLayout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(accountNameLabel, GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                            .addComponent(accountNameLabel, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                             .addContainerGap())
                 );
                 personalInfoPanelLayout.setVerticalGroup(
@@ -96,6 +112,12 @@ public class MainFrame extends JFrame {
                 friendsListPanel.setViewportView(list1);
             }
 
+            //---- addFriendButton ----
+            addFriendButton.setText("Add friend");
+            addFriendButton.setBackground(new Color(0, 0, 51));
+            addFriendButton.setForeground(Color.white);
+            addFriendButton.addActionListener(e -> addFriendButtonActionPerformed(e));
+
             GroupLayout accountInformationPanelLayout = new GroupLayout(accountInformationPanel);
             accountInformationPanel.setLayout(accountInformationPanelLayout);
             accountInformationPanelLayout.setHorizontalGroup(
@@ -104,7 +126,11 @@ public class MainFrame extends JFrame {
                         .addContainerGap()
                         .addGroup(accountInformationPanelLayout.createParallelGroup()
                             .addComponent(personalInfoPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(friendsListPanel))
+                            .addComponent(friendsListPanel)
+                            .addGroup(GroupLayout.Alignment.TRAILING, accountInformationPanelLayout.createSequentialGroup()
+                                .addGap(0, 26, Short.MAX_VALUE)
+                                .addComponent(addFriendButton, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)))
                         .addContainerGap())
             );
             accountInformationPanelLayout.setVerticalGroup(
@@ -112,8 +138,10 @@ public class MainFrame extends JFrame {
                     .addGroup(accountInformationPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(personalInfoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22)
+                        .addComponent(addFriendButton)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(friendsListPanel, GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                        .addComponent(friendsListPanel, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
                         .addContainerGap())
             );
         }
@@ -217,6 +245,7 @@ public class MainFrame extends JFrame {
     private JLabel accountNameLabel;
     private JScrollPane friendsListPanel;
     private JList list1;
+    private JButton addFriendButton;
     private JPanel ChatPanel;
     private JTextField messageField;
     private JScrollPane historyScrollPane;

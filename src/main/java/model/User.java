@@ -1,23 +1,29 @@
 package model;
 
 
-public class User {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-    private int id;
+public class User implements Serializable{
+
     private String username;
-    private String password;
+    private List<User> friends;
 
-    public User(int id, String username, String password) {
-        this.id = id;
+    public User(String username) {
         this.username = username;
-        this.password = password;
-    }
-
-    public int getId() {
-        return id;
+        friends = new ArrayList<>();
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public void addFriend(User user){
+        friends.add(user);
+    }
+
+    public List<User> getFriends(){
+        return this.friends;
     }
 }

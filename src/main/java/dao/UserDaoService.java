@@ -1,7 +1,11 @@
 package dao;
 
-public interface UserDaoService {
+import model.User;
 
-    Boolean getUser(String username, String password);
-    Boolean createUser(String username, String password);
+public interface UserDaoService {
+    User getUser(String username, String password);
+    User createUser(String username, String password);
+    boolean updateUser(User user);
+
+    User userExists(String username);
 }

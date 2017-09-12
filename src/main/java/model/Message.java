@@ -9,7 +9,8 @@ public class Message implements Serializable {
     private String receiver;
     private String body;
 
-    public Message(String sender, String receiver, String body){
+    public Message(int chatRoomId, String sender, String receiver, String body){
+        this.chatRoomId = chatRoomId;
         this.sender = sender;
         this.receiver = receiver;
         this.body = body;
