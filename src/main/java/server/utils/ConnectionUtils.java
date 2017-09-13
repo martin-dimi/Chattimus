@@ -18,15 +18,16 @@ public class ConnectionUtils {
     private static final int REQUEST_CONNECT_USER = 1;
     private static final int REQUEST_CREATE_USER = 2;
 
-    private final UserDaoService userDao = new UserDao();
+    private final UserDaoService userDao;
 
     private ObjectInputStream input = null;
     private ObjectOutputStream output = null;
     private User currentUser;
 
-    public ConnectionUtils(ObjectInputStream input, ObjectOutputStream output){
+    public ConnectionUtils(ObjectInputStream input, ObjectOutputStream output, UserDaoService userDao){
         this.output = output;
         this.input = input;
+        this.userDao = userDao;
     }
 
     public User acceptConnectionRequest() {

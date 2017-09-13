@@ -1,5 +1,7 @@
 package server;
 
+import dao.UserDao;
+import dao.UserDaoService;
 import model.User;
 import server.utils.ConnectionUtils;
 import server.utils.UserUtils;
@@ -17,15 +19,17 @@ public class ClientWorker extends Thread{
 
     private Socket mSocket;
     private ConnectionUtils connectionUtils;
-    private ObjectInputStream input = null;
-    private ObjectOutputStream output = null;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private final UserDaoService userDao;
 
     ClientWorker(Socket socket){
         mSocket = socket;
+        userDao = new UserDao();
         try {
             output = new ObjectOutputStream(mSocket.getOutputStream());
             input = new ObjectInputStream(mSocket.getInputStream());
-            connectionUtils = new ConnectionUtils(input, output);
+            connectionUtils = new ConnectionUtils(input, output, userDao);
             LOGGER.log(Level.INFO, "User connected");
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error: Could't establish IO streams with client");
@@ -37,7 +41,7 @@ public class ClientWorker extends Thread{
         User currentUser = connectionUtils.acceptConnectionRequest();
         if(currentUser != null) {
             boolean isConnected = true;
-            UserUtils userUtils = new UserUtils(currentUser, input, output);
+            UserUtils userUtils = new UserUtils(currentUser, input, output, userDao);
             while (isConnected) {
                 userUtils.acceptUserRequest();
                 isConnected = userUtils.isConnected();

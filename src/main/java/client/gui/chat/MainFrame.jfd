@@ -38,7 +38,7 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "friendsListPanel"
 					add( new FormComponent( "javax.swing.JList" ) {
-						name: "list1"
+						name: "friendsList"
 					} )
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
@@ -78,10 +78,14 @@ new FormModel {
 				} )
 			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {space :0:366:x}"
-				"$verticalGroup": "par l {space :0:88:x}"
+				"$horizontalGroup": "par l {seq l {space :::p, comp FriendsName:::p:165:p, space ::195:x}}"
+				"$verticalGroup": "par l {seq t {space ::56:x, comp FriendsName:::p:26:p, space :::p}}"
 			} ) {
 				name: "panel1"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "FriendsName"
+					"text": "FriendsName"
+				} )
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

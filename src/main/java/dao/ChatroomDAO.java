@@ -1,5 +1,7 @@
 package dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -11,11 +13,14 @@ import model.User;
 import org.bson.Document;
 import sun.misc.resources.Messages_es;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class ChatroomDAO implements ChatroomsDAOService {
 
@@ -27,47 +32,58 @@ public class ChatroomDAO implements ChatroomsDAOService {
             "chattimus-shard-00-01-jgbyp.mongodb.net:27017," +
             "chattimus-shard-00-02-jgbyp.mongodb.net:27017/test?ssl=true&replicaSet=Chattimus-shard-0&authSource=admin";
 
+    private final MongoCollection<Document> chatrooms;
+
+    public ChatroomDAO(){
+        chatrooms = getChatrooms();
+    }
+
+
     @Override
-    public Chatroom getChatroom(User[] participants) {
-        MongoCollection<Document> collection = getChatrooms();
-        Document chatroom = collection
-                .find(Filters.eq("participants", participants))
-                .first();
+    public Chatroom getChatroom(String[] participants) {
 
-        List<Message> messages = Arrays.asList(chatroom.get("participants", Message[].class));
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Document chatroomDoc = chatrooms.find(eq("participants", participants)).first();
+            Chatroom chatroom = mapper.readValue(chatroomDoc.toJson(), Chatroom.class);
+            LOGGER.log(Level.INFO, "Chatroom found.");
+            return chatroom;
+        } catch (Exception e){
+            LOGGER.log(Level.INFO, "Could not find chatroom.");
+            return null;
+        }
 
-        return new Chatroom(participants, messages);
     }
 
     @Override
-    public Chatroom createChatroom(User[] participants) {
-        MongoCollection<Document> collection = getChatrooms();
-
-        Document chatroom = new Document();
-        chatroom.append("participants", participants);
-        chatroom.append("messages", new ArrayList());
-        collection.insertOne(chatroom);
-
-        return new Chatroom(participants);
+    public Chatroom createChatroom(String[] participants) {
+        Chatroom chatroom = new Chatroom(participants);
+        ObjectMapper mapper = new ObjectMapper();
+        LOGGER.log(Level.INFO, "Creating chatroom.");
+        try {
+            String chatroomJSON = mapper.writeValueAsString(chatroom);
+            Document chatroomToBeInserted = Document.parse(chatroomJSON);
+            chatrooms.insertOne(chatroomToBeInserted);
+            LOGGER.log(Level.INFO, "Chatroom created.");
+            return chatroom;
+        } catch (JsonProcessingException e) {
+            LOGGER.log(Level.WARNING, "Chatroom not created.");
+            return null;
+        }
     }
 
     @Override
-    public void addMessage(Message message) {
-        MongoCollection<Document> collection = getChatrooms();
-    }
-
-    @Override
-    public List<Message> getMessages() {
-        return null;
+    public boolean updateChatroom(Chatroom chatroom) {
+        return false;
     }
 
     private  MongoCollection<Document> getChatrooms(){
-            LOGGER.log(Level.INFO, "Connecting to db");
-            MongoClientURI connectionURI = new MongoClientURI(CONNECTION_URL);
-            MongoClient mongoClient = new MongoClient(connectionURI);
-            MongoDatabase database = mongoClient.getDatabase("Chattimus");
-            MongoCollection<Document> collection = database.getCollection("Chatrooms");
-            LOGGER.log(Level.INFO, "Connection successful");
-            return collection;
+        LOGGER.log(Level.INFO, "Connecting to db");
+        MongoClientURI connectionURI = new MongoClientURI(CONNECTION_URL);
+        MongoClient mongoClient = new MongoClient(connectionURI);
+        MongoDatabase database = mongoClient.getDatabase("Chattimus");
+        MongoCollection<Document> collection = database.getCollection("Chatrooms");
+        LOGGER.log(Level.INFO, "Connection successful");
+        return collection;
     }
 }

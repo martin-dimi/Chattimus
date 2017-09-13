@@ -1,11 +1,8 @@
-/*
- * Created by JFormDesigner on Wed Sep 06 10:23:47 EEST 2017
- */
+
 
 package client.gui.chat;
 
 import client.utils.ConnectionService;
-import model.Message;
 import model.User;
 
 import java.awt.*;
@@ -17,7 +14,9 @@ import javax.swing.GroupLayout;
 public class MainFrame extends JFrame {
 
     private ConnectionService connectionService;
+    private DefaultListModel<String> l1 = new DefaultListModel<>();
     private User user;
+
 
     public void start(ConnectionService service, User user){
         connectionService = service;
@@ -34,13 +33,25 @@ public class MainFrame extends JFrame {
         connectionService.sentMessage(message);
     }
 
+    void updateUser(User user){
+        this.user = user;
+        updateFriendsList();
+    }
+
+    private void updateFriendsList(){
+        for(String friend : user.getFriends()){
+            l1.addElement(friend);
+        }
+    }
 
     private void createUIComponents() {
         accountNameLabel = new JLabel(user.getUsername());
+        friendsList = new JList<>(l1);
+        updateFriendsList();
     }
 
     private void addFriendButtonActionPerformed(ActionEvent e) {
-        AddFriendFrame addFriendFrame = new AddFriendFrame(connectionService);
+        AddFriendFrame addFriendFrame = new AddFriendFrame(this, connectionService);
     }
 
     private void initComponents() {
@@ -51,7 +62,7 @@ public class MainFrame extends JFrame {
         accountInformationPanel = new JPanel();
         personalInfoPanel = new JPanel();
         friendsListPanel = new JScrollPane();
-        list1 = new JList();
+        friendsList = new JList();
         addFriendButton = new JButton();
         ChatPanel = new JPanel();
         messageField = new JTextField();
@@ -59,6 +70,7 @@ public class MainFrame extends JFrame {
         historyMessagesArea = new JTextArea();
         sentMessageButton = new JButton();
         panel1 = new JPanel();
+        FriendsName = new JLabel();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -109,7 +121,7 @@ public class MainFrame extends JFrame {
 
             //======== friendsListPanel ========
             {
-                friendsListPanel.setViewportView(list1);
+                friendsListPanel.setViewportView(friendsList);
             }
 
             //---- addFriendButton ----
@@ -200,15 +212,24 @@ public class MainFrame extends JFrame {
         //======== panel1 ========
         {
 
+            //---- FriendsName ----
+            FriendsName.setText("FriendsName");
+
             GroupLayout panel1Layout = new GroupLayout(panel1);
             panel1.setLayout(panel1Layout);
             panel1Layout.setHorizontalGroup(
                 panel1Layout.createParallelGroup()
-                    .addGap(0, 366, Short.MAX_VALUE)
+                    .addGroup(panel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(FriendsName, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(195, Short.MAX_VALUE))
             );
             panel1Layout.setVerticalGroup(
                 panel1Layout.createParallelGroup()
-                    .addGap(0, 88, Short.MAX_VALUE)
+                    .addGroup(GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
+                        .addContainerGap(56, Short.MAX_VALUE)
+                        .addComponent(FriendsName, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
             );
         }
 
@@ -244,7 +265,7 @@ public class MainFrame extends JFrame {
     private JPanel personalInfoPanel;
     private JLabel accountNameLabel;
     private JScrollPane friendsListPanel;
-    private JList list1;
+    private JList friendsList;
     private JButton addFriendButton;
     private JPanel ChatPanel;
     private JTextField messageField;
@@ -252,5 +273,6 @@ public class MainFrame extends JFrame {
     private JTextArea historyMessagesArea;
     private JButton sentMessageButton;
     private JPanel panel1;
+    private JLabel FriendsName;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

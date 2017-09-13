@@ -1,11 +1,15 @@
 package client.utils;
 
+import model.Chatroom;
 import model.User;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +24,16 @@ public class ConnectionUtils implements ConnectionService {
     private static final int REQUEST_DISCONNECT_USER_ID = 3;
     private static final int REQUEST_SENT_MESSAGE_ID = 10;
     private static final int REQUEST_ADD_FRIEND_ID = 11;
+    private static final int REQUEST_GET_CHATROOMS_ID = 20;
 
 
 
     private ObjectOutputStream output;
     private ObjectInputStream input;
+    private boolean isConnected;
 
     public ConnectionUtils(){
+        connectService();
     }
 
     @Override
@@ -100,7 +107,7 @@ public class ConnectionUtils implements ConnectionService {
     }
 
     @Override
-    public User findFriend(String username) {
+    public User addFriend(String username) {
         LOGGER.log(Level.INFO, "Sending request");
         try {
             output.writeInt(REQUEST_ADD_FRIEND_ID);
@@ -109,8 +116,13 @@ public class ConnectionUtils implements ConnectionService {
 
             boolean friendExists = input.readBoolean();
             if(friendExists){
-                return (User) input.readObject();
-            }else return null;
+                User updatedUser = (User) input.readObject();
+                LOGGER.log(Level.INFO, "Friend found.");
+                return updatedUser;
+            }else {
+                LOGGER.log(Level.INFO, "Friend not found.");
+                return null;
+            }
 
         } catch (IOException | ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Couldn't find user");
@@ -118,16 +130,36 @@ public class ConnectionUtils implements ConnectionService {
         }
     }
 
-    public boolean connectService(){
+    @Override
+    public List<Chatroom> getChatrooms(String username) {
+        LOGGER.log(Level.INFO, "Sending request");
+        try {
+            output.writeInt(REQUEST_GET_CHATROOMS_ID);
+            output.writeObject(username);
+            output.flush();
+
+            return Arrays.asList((Chatroom[]) input.readObject());
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "Could not get chatrooms");
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    private void connectService(){
         try {
             Socket serverSocket = new Socket(IP, PORT);
             output = new ObjectOutputStream(serverSocket.getOutputStream());
             input = new ObjectInputStream(serverSocket.getInputStream());
             LOGGER.log(Level.INFO, "Connected successfully");
-            return true;
+            isConnected = true;
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not connect to server: " + IP);
-            return false;
+            isConnected=false;
         }
     }
 
@@ -143,4 +175,6 @@ public class ConnectionUtils implements ConnectionService {
             e.printStackTrace();
         }
     }
+
+
 }

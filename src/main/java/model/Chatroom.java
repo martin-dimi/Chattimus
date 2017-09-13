@@ -1,20 +1,22 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Chatroom {
 
-    private int id;
-    private User[] participants;
+    private String[] participants;
     private List<Message> messages;
 
-    public Chatroom(User[] participants) {
+    public Chatroom(String[] participants) {
         this.participants = participants;
         messages = new ArrayList<>();
     }
 
-    public Chatroom(User[] participants, List<Message> messages) {
+    public Chatroom(String[] participants, List<Message> messages) {
         this.participants = participants;
         this.messages = messages;
     }
@@ -23,7 +25,7 @@ public class Chatroom {
         messages.add(message);
     }
 
-    public User[] getParticipants() {
+    public String[] getParticipants() {
         return participants;
     }
 

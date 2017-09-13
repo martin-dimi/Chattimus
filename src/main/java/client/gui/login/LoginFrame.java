@@ -33,7 +33,7 @@ public class LoginFrame extends JFrame {
             @Override
             public void run() {
                 super.run();
-                if(connectionService.connectService())
+                if(connectionService.isConnected())
                     showMenu();
                 else
                     showError();

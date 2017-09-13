@@ -8,9 +8,8 @@ import java.util.List;
 
 public interface ChatroomsDAOService {
 
-    Chatroom getChatroom(User[] participants);
-    Chatroom createChatroom(User[] participants);
-    void addMessage(Message message);
-    List<Message> getMessages();
+    Chatroom getChatroom(String[] participants);
+    Chatroom createChatroom(String[] participants);
+    boolean updateChatroom(Chatroom chatroom);
 
 }

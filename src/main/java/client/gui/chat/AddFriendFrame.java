@@ -9,13 +9,16 @@ import java.awt.*;
 public class AddFriendFrame extends JFrame {
 
     private static final int FRAME_SIZE_X = 200;
-    private static final int FRAME_SIZE_Y = 250;
+    private static final int FRAME_SIZE_Y = 200;
 
-    private JTextField friendUsername;
+    private JTextField friendUsernameTextField;
+    private JLabel error;
     private ConnectionService connectionService;
+    private MainFrame mainFrame;
 
-    AddFriendFrame(ConnectionService connectionService){
+    AddFriendFrame(MainFrame mainFrame, ConnectionService connectionService){
         this.connectionService = connectionService;
+        this.mainFrame = mainFrame;
         constructFrame();
         constructPanels();
         setVisible(true);
@@ -32,16 +35,29 @@ public class AddFriendFrame extends JFrame {
     private void constructPanels(){
         GridBagConstraints gbc = new GridBagConstraints();
 
+        //Error message
+            error = new JLabel();
+            error.setText("User doesn't exist");
+            error.setForeground(Color.red);
+            error.setVisible(false);
+
+            gbc.gridx = 1;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(5, 0,0,0);
+
+            add(error, gbc);
+        //
+
         //Username textField
-            friendUsername = new JTextField(10);
+            friendUsernameTextField = new JTextField(10);
 
             gbc.gridx = 0;
-            gbc.gridy = 0;
+            gbc.gridy = 1;
             gbc.gridwidth = 3;
             gbc.gridheight = 1;
-            gbc.insets = new Insets(20, 0,0,0);
+            gbc.insets = new Insets(5, 0,0,0);
 
-            add(friendUsername, gbc);
+            add(friendUsernameTextField, gbc);
         //
 
         //Add friend Button
@@ -49,22 +65,25 @@ public class AddFriendFrame extends JFrame {
             addFriend.addActionListener(e -> addFriend());
 
             gbc.gridx = 1;
-            gbc.gridy = 1;
+            gbc.gridy = 2;
             gbc.gridwidth = 1;
             gbc.gridheight = 1;
-            gbc.insets = new Insets(20, 0,0,0);
+            gbc.insets = new Insets(5, 10,0,0);
 
             add(addFriend, gbc);
         //
     }
 
     private void addFriend(){
-        String username = friendUsername.getText();
-        User updatedUser = connectionService.findFriend(username);
+        String username = friendUsernameTextField.getText();
+        User updatedUser = connectionService.addFriend(username);
         if(updatedUser != null){
-            System.out.println("Friend found");
+            mainFrame.updateUser(updatedUser);
+            dispose();
         }
-        else System.out.println("Friend not found");
+        else{
+            error.setVisible(true);
+        }
 
     }
 
